@@ -1,0 +1,53 @@
+<body style="height: 100vh; background: #111; text-align: center;">
+    <canvas id="c" width="400" height="400"></canvas>
+    <script>
+        function diedMessage(x) {
+            let myTab;
+            let closeGame = document.querySelector("#close")
+            alert("You Died! \n Best Score:" + x)
+            // var r=confirm("Try again?")
+            // if(r == true){
+            //     alert("Good luck")
+            // } else {
+            //     alert("Goodbye")
+            //     closeGame.addEventListener('click')
+            // }
+            //TODO:fazer a aba fechar quando apertar cancel no alert
+        }
+
+        context = c.getContext("2d")
+        const bird = new Image()
+        bird.src = "bird.png"
+        birdX = birdDY = score = bestScore = 0; // birdDY é a velocidade no eixo Y
+        interval = birdSize = pipeWidth = topPipeBottomY = 24;
+        birdY = pipeGap = 200;
+        canvasSize = pipeX = 400;
+        c.onclick = () => (birdDY = 9)
+        setInterval(() => {
+            context.fillStyle = "skyblue"
+            context.fillRect(0,0,canvasSize,canvasSize);
+            birdY -= birdDY -= 0.5; //gravity
+            context.drawImage(bird, birdX, birdY, birdSize * (524/374), birdSize)
+            context.fillStyle = "green"
+            pipeX -= 8;
+            if(pipeX < -pipeWidth){
+                pipeX = canvasSize
+                topPipeBottomY = pipeGap * Math.random()
+            }
+            context.fillRect(pipeX, 0, pipeWidth, topPipeBottomY) //draw top pipe
+            context.fillRect(pipeX, (topPipeBottomY + pipeGap) -80, pipeWidth, canvasSize) //draw bottom pipe
+            context.fillStyle = "black" 
+            context.fillText(`Score:${score++}`, 9, 25)
+            bestScore = bestScore < score ? score : bestScore; // New best score?
+            context.fillText (`Best:${bestScore}`, 9, 40)
+            if(((birdY < topPipeBottomY || birdY > topPipeBottomY + pipeGap) && pipeX < birdSize * (524/374))  //hit pipe
+                || (birdY > canvasSize)){ // bird die
+                diedMessage(bestScore)
+                birdDY = 0;
+                birdY = 200;
+                pipeX = canvasSize
+                score = 0;
+            }
+        }, interval)
+    </script>
+</body>
